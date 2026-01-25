@@ -6,8 +6,8 @@ from telebot import types
 from gatet import Tele
 
 # Bot config
-BOT_TOKEN = "8397296517:AAHsHLCgo7_je6uATLELv2U-XZqZlqOcxjM"
-ALLOWED_CHAT_ID = "445949718"
+BOT_TOKEN = "8426512661:AAGWiADKvrJHDp919MndSpBS6PDTAY5TZ6k"
+ALLOWED_CHAT_ID = "8426512661"
 
 bot = telebot.TeleBot(BOT_TOKEN, parse_mode="HTML")
 
