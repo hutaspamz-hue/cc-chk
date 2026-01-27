@@ -7,7 +7,7 @@ from gatet import Tele
 from datetime import datetime
 
 # Bot config
-BOT_TOKEN = "8426512661:AAGWiADKvrJHDp919MndSpBS6PDTAY5TZ6k"
+BOT_TOKEN = "8426512661:AAHwyHErP1BVX_Ph7A-02vMrzVZH4KLidsY"
 ALLOWED_CHAT_ID = "8202990461"
 
 bot = telebot.TeleBot(BOT_TOKEN, parse_mode="HTML")
