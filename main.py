@@ -645,11 +645,8 @@ def main():
         print("⚡ Bot is now running...")
         print("🔧 Press Ctrl+C to stop")
         
-        application.run_polling(
-            allowed_updates=Update.ALL_TYPES,
-            drop_pending_updates=True,
-            close_loop=False
-        )
+        # Simple polling without extra parameters
+        application.run_polling()
         
     except Exception as e:
         logger.error(f"❌ Failed to start bot: {e}")
