@@ -17,8 +17,8 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# Bot token
-TOKEN = "8307343077:AAGG7qRYwcN2fJ2Wig3kMpsT7605YEb-pgU"
+# Bot token from environment variable (Railway best practice)
+TOKEN = os.environ.get("BOT_TOKEN", "8307343077:AAGG7qRYwcN2fJ2Wig3kMpsT7605YEb-pgU")
 
 # Store user states and data
 user_sessions = {}
@@ -141,7 +141,7 @@ class CardChecker:
                     result += "✅ CVV LIVE"
                     return result + f"\n📝 Insufficient Funds"
                 elif 'avs' in response_text or 'address_verification' in response_text or 'incorrect_address' in response_text:
-                    result += "✅ AVS LIVE"
+                    result += "✅ AVV LIVE"
                     return result + f"\n📝 Address Verification Failed"
                 elif '3d' in response_text or 'three_d_secure' in response_text or 'authentication_required' in response_text:
                     result += "✅ 3D SECURE"
@@ -511,8 +511,10 @@ def main():
     application.add_error_handler(error_handler)
     
     # Start the bot
-    print("🤖 Bot is starting...")
-    print(f"🔗 Link: https://t.me/{(application.bot.username)}")
+    logger.info("🤖 Bot is starting...")
+    logger.info(f"🔗 Link: https://t.me/{(application.bot.username)}")
+    
+    # Run the bot
     application.run_polling(allowed_updates=Update.ALL_TYPES)
 
 if __name__ == '__main__':
