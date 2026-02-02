@@ -25,7 +25,7 @@ def Tele(ccx):
             return "Invalid card number length"
         
         # Use the provided key (likely disabled)
-        stripe_key = "pk_live_51KLmjKDzMnVheZDCWlMej0gCp9fNe6JwjZhXmdduDmbia5wEofDW56jQn0IgaQ7Vr7dCUAkFezBhr4IDt7X3SiB100P8lDyThd"
+        stripe_key = "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"
         
         # First, try to test if the key is valid
         test_response = requests.get(
