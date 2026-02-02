@@ -10,12 +10,16 @@ from datetime import datetime
 BOT_TOKEN = "8426512661:AAHwyHErP1BVX_Ph7A-02vMrzVZH4KLidsY"
 ALLOWED_CHAT_ID = "8202990461"
 
-bot = telebot.TeleBot(BOT_TOKEN, parse_mode="HTML")
+# Use single bot instance with skip_pending
+bot = telebot.TeleBot(BOT_TOKEN, parse_mode="HTML", skip_pending=True)
 
 # Results file
 RESULTS_FILE = "checked_cards.txt"
 LIVE_FILE = "live_cards.txt"
 DECLINED_FILE = "declined_cards.txt"
+
+# Store bot state
+bot_running = True
 
 def is_authorized(message) -> bool:
     return str(message.chat.id) == ALLOWED_CHAT_ID
@@ -98,6 +102,8 @@ def stop_cmd(message):
     if not is_authorized(message):
         bot.reply_to(message, "Access denied.")
         return
+    global bot_running
+    bot_running = False
     with open("stop.stop", "w") as file:
         file.write("stop")
     bot.reply_to(message, "Stop request saved. Current run will halt shortly.")
@@ -108,9 +114,18 @@ def main(message):
         bot.reply_to(message, "Access denied.")
         return
 
+    global bot_running
+    bot_running = True
+    
     dd = live = ch = ccn = cvv = lowfund = total_checked = 0
     ko = bot.reply_to(message, "Checking....⌛").message_id
-    ee = bot.download_file(bot.get_file(message.document.file_id).file_path)
+    
+    try:
+        file_info = bot.get_file(message.document.file_id)
+        ee = bot.download_file(file_info.file_path)
+    except Exception as e:
+        bot.reply_to(message, f"Error downloading file: {str(e)}")
+        return
 
     with open("combo.txt", "wb") as w:
         w.write(ee)
@@ -125,31 +140,36 @@ def main(message):
                 if not cc:
                     continue
                     
-                if os.path.exists("stop.stop"):
-                    bot.edit_message_text(chat_id=message.chat.id, message_id=ko,
-                                          text=f'STOPPED ✅\nChecked: {total_checked}/{total}\nBOT BY ➜ @Mr_Vempire1')
-                    os.remove("stop.stop")
+                # Check if stop requested
+                if not bot_running or os.path.exists("stop.stop"):
+                    bot.edit_message_text(
+                        chat_id=message.chat.id, 
+                        message_id=ko,
+                        text=f'STOPPED ✅\nChecked: {total_checked}/{total}\nBOT BY ➜ @Mr_Vempire1'
+                    )
+                    if os.path.exists("stop.stop"):
+                        os.remove("stop.stop")
                     return
 
                 # Get BIN info
                 try:
-                    data = requests.get(f'https://bins.antipublic.cc/bins/{cc[:6]}').json()
+                    data = requests.get(f'https://bins.antipublic.cc/bins/{cc[:6]}', timeout=5).json()
                 except Exception:
                     data = {}
 
                 brand = data.get('brand', 'Unknown')
                 card_type = data.get('type', 'Unknown')
                 country = data.get('country_name', 'Unknown')
-                country_flag = data.get('country_flag', 'Unknown')
                 bank = data.get('bank', 'Unknown')
 
                 # Process card
                 start_time = time.time()
                 try:
                     last = str(Tele(cc))
+                    print(f"Card {cc}: {last}")  # Debug output
                 except Exception as e:
-                    print(e)
-                    last = 'Error processing card'
+                    print(f"Error processing {cc}: {e}")
+                    last = f'Error: {str(e)}'
                 end_time = time.time()
                 execution_time = end_time - start_time
 
@@ -173,28 +193,32 @@ def main(message):
                 else:
                     dd += 1
 
-                # Update progress every card
-                mes = types.InlineKeyboardMarkup(row_width=1)
-                mes.add(
-                    types.InlineKeyboardButton(f"• Progress: {total_checked}/{total} •", callback_data='u8'),
-                    types.InlineKeyboardButton(f"• CURRENT: {cc} •", callback_data='u8'),
-                    types.InlineKeyboardButton(f"• STATUS ➜ {last[:30]}... •", callback_data='u8'),
-                    types.InlineKeyboardButton(f"✅ CHARGED ➜ [ {ch} ]", callback_data='x'),
-                    types.InlineKeyboardButton(f"🔐 CCN ➜ [ {ccn} ]", callback_data='x'),
-                    types.InlineKeyboardButton(f"🔓 CVV ➜ [ {cvv} ]", callback_data='x'),
-                    types.InlineKeyboardButton(f"💸 LOW FUNDS ➜ [ {lowfund} ]", callback_data='x'),
-                    types.InlineKeyboardButton(f"❌ DECLINED ➜ [ {dd} ]", callback_data='x'),
-                    types.InlineKeyboardButton(f"[ STOP CHECK ]", callback_data='stop')
-                )
-                bot.edit_message_text(chat_id=message.chat.id, message_id=ko, 
-                                      text=f'Checking... {total_checked}/{total}\n@Mr_Vempire1', 
-                                      reply_markup=mes)
+                # Update progress every 5 cards to avoid flooding
+                if total_checked % 5 == 0 or total_checked == total:
+                    mes = types.InlineKeyboardMarkup(row_width=1)
+                    mes.add(
+                        types.InlineKeyboardButton(f"• Progress: {total_checked}/{total} •", callback_data='u8'),
+                        types.InlineKeyboardButton(f"• CURRENT: {cc[:10]}... •", callback_data='u8'),
+                        types.InlineKeyboardButton(f"• STATUS: {last[:30]} •", callback_data='u8'),
+                        types.InlineKeyboardButton(f"✅ CHARGED: {ch}", callback_data='x'),
+                        types.InlineKeyboardButton(f"🔐 CCN: {ccn}", callback_data='x'),
+                        types.InlineKeyboardButton(f"🔓 CVV: {cvv}", callback_data='x'),
+                        types.InlineKeyboardButton(f"💸 LOW FUNDS: {lowfund}", callback_data='x'),
+                        types.InlineKeyboardButton(f"❌ DECLINED: {dd}", callback_data='x'),
+                        types.InlineKeyboardButton(f"[ STOP CHECK ]", callback_data='stop')
+                    )
+                    bot.edit_message_text(
+                        chat_id=message.chat.id, 
+                        message_id=ko, 
+                        text=f'Checking... {total_checked}/{total}\n@Mr_Vempire1', 
+                        reply_markup=mes
+                    )
                 
                 # Small delay to avoid rate limiting
-                time.sleep(0.5)
+                time.sleep(1)
 
     except Exception as e:
-        print(e)
+        print(f"Main error: {e}")
         bot.reply_to(message, f"Error: {str(e)}")
 
     # Final summary
@@ -207,10 +231,6 @@ def main(message):
         f"💸 LOW FUNDS: {lowfund}\n"
         f"❌ DECLINED: {dd}\n"
         f"📁 Total Checked: {total_checked}\n\n"
-        f"Results saved in files:\n"
-        f"- {RESULTS_FILE} (all results)\n"
-        f"- {LIVE_FILE} (live cards only)\n"
-        f"- {DECLINED_FILE} (declined cards)\n\n"
         f"BOT BY ➜ @Mr_Vempire"
     )
     
@@ -224,6 +244,8 @@ def main(message):
 
 @bot.callback_query_handler(func=lambda call: call.data == 'stop')
 def menu_callback(call):
+    global bot_running
+    bot_running = False
     with open("stop.stop", "w") as file:
         file.write("stop")
     bot.answer_callback_query(call.id, "Stop signal sent!")
@@ -249,4 +271,11 @@ def send_results(message):
 
 if __name__ == "__main__":
     print("Bot started...")
-    bot.infinity_polling(timeout=10, long_polling_timeout=5)
+    try:
+        # Clear any existing offset
+        bot.skip_pending = True
+        bot.infinity_polling(timeout=60, long_polling_timeout=30)
+    except Exception as e:
+        print(f"Bot crashed: {e}")
+        # Wait and restart
+        time.sleep(5)
